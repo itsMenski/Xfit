@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XFit - Diet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7Z4RV/Zb6+0wQTTt+fSvZCvFzVfUjZrZ+cV0s5a/1B4NqlX2uPj1SABfA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <!-- Gradient Header with Logo -->
+  <div class="header">
+    <div class="header-logo">
+      <h1><span class="blue-x">X</span><span class="white-fit">Fit</span></h1>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="logo"><a href="../index.html">XFit</a></div>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="body.html" class="nav-link">Body Progress</a>
+      <a href="workout.html" class="nav-link">Workout</a>
+      <a href="diet.html" class="nav-link">Diet</a>
+      <a href="settings.html" class="nav-link">Settings</a>
+      <a href="signup.html" class="nav-link">Sign Up</a>
+      <a href="about.html" class="nav-link">About</a>
+      <button id="themeToggle" class="button">Toggle Theme</button>
+    </div>
+    <div class="hamburger" id="hamburger">☰</div>
+  </nav>
+
+  <!-- Diet Content -->
+  <div class="container">
+    <h2>Diet & Nutrition Tracker</h2>
+    <div class="form-section">
+      <h3>Add Food Entry</h3>
+      <form id="foodForm">
+        <div class="input-group">
+          <label for="foodName">Food Name:</label>
+          <input type="text" id="foodName" required>
+        </div>
+        <div class="input-group">
+          <label for="calories">Calories:</label>
+          <input type="number" id="calories" min="0" step="1" required>
+        </div>
+        <div class="input-group">
+          <label for="protein">Protein (g):</label>
+          <input type="number" id="protein" min="0" step="0.1" required>
+        </div>
+        <div class="input-group">
+          <label for="carbs">Carbs (g):</label>
+          <input type="number" id="carbs" min="0" step="0.1" required>
+        </div>
+        <div class="input-group">
+          <label for="fats">Fats (g):</label>
+          <input type="number" id="fats" min="0" step="0.1" required>
+        </div>
+        <button type="submit" class="button">Add Entry</button>
+      </form>
+    </div>
+    <div class="diary-section">
+      <h3>Food Diary</h3>
+      <table id="diaryTable">
+        <thead>
+          <tr>
+            <th>Food Name</th>
+            <th>Calories</th>
+            <th>Protein (g)</th>
+            <th>Carbs (g)</th>
+            <th>Fats (g)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="clearDiaryBtn" class="button" style="margin-top: 20px;">Clear Diary</button>
+      <p id="noEntriesMessage" style="display: none; margin-top: 20px;">No food entries yet. Start by adding your meals.</p>
+    </div>
+  </div>
+
+  <script src="../assets/scripts.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const foodForm = document.getElementById('foodForm');
+      const diaryTable = document.getElementById('diaryTable').querySelector('tbody');
+      const clearDiaryBtn = document.getElementById('clearDiaryBtn');
+      const noEntriesMessage = document.getElementById('noEntriesMessage');
+      let foodDiary = JSON.parse(localStorage.getItem('foodDiary')) || [];
+
+      function displayDiary() {
+        diaryTable.innerHTML = '';
+        if (foodDiary.length === 0) {
+          noEntriesMessage.style.display = 'block';
+          return;
+        }
+        noEntriesMessage.style.display = 'none';
+        foodDiary.forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${entry.name}</td>
+            <td>${entry.calories}</td>
+            <td>${entry.protein}</td>
+            <td>${entry.carbs}</td>
+            <td>${entry.fats}</td>
+          `;
+          diaryTable.appendChild(row);
+        });
+      }
+
+      foodForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('foodName').value.trim();
+        const calories = parseInt(document.getElementById('calories').value);
+        const protein = parseFloat(document.getElementById('protein').value);
+        const carbs = parseFloat(document.getElementById('carbs').value);
+        const fats = parseFloat(document.getElementById('fats').value);
+
+        if (!name || isNaN(calories) || calories < 0 || isNaN(protein) || protein < 0 || isNaN(carbs) || carbs < 0 || isNaN(fats) || fats < 0) {
+          alert('Please enter valid food details.');
+          return;
+        }
+
+        const newEntry = { name, calories, protein, carbs, fats };
+        foodDiary.push(newEntry);
+        localStorage.setItem('foodDiary', JSON.stringify(foodDiary));
+        displayDiary();
+        foodForm.reset();
+      });
+
+      clearDiaryBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear your food diary?')) {
+          foodDiary = [];
+          localStorage.removeItem('foodDiary');
+          displayDiary();
+        }
+      });
+
+      displayDiary();
+    });
+  </script>
+</body>
+</html>

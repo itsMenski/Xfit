@@ -1,0 +1,441 @@
+/* Global Styles */
+:root {
+    --primary-color: #3498db;
+    --bg-color: #ffffff;
+    --text-color: #2c3e50;
+    --section-bg: #ecf0f1;
+    --header-bg: linear-gradient(135deg, #2980b9, #3498db);
+    --header-text: #ffffff;
+}
+
+body.dark {
+    --primary-color: #66aaff;
+    --bg-color: #121212;
+    --text-color: #e0e0e0;
+    --section-bg: #1e1e1e;
+    --header-bg: linear-gradient(135deg, #0056b3, #000000);
+    --header-text: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Header Styles */
+.header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 60px 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.header h1 {
+    font-size: 3rem;
+    margin: 0;
+}
+
+.header h1 .blue-x {
+    color: var(--primary-color);
+}
+
+.header h1 .white-fit {
+    color: var(--header-text);
+}
+
+.header-logo {
+    animation: bounce 4s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Navigation Styles */
+.nav {
+    background-color: var(--bg-color);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav .logo a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+.nav-links a:hover {
+    color: var(--primary-color);
+}
+
+.hamburger {
+    display: none;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+
+/* Container Styles */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    animation: fadeIn 0.5s; /* Added fade-in animation */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Button Styles */
+.button {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.button:hover {
+    background: #2980b9;
+}
+
+/* Form Styles (General) */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-group input, .input-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px var(--primary-color);
+}
+
+/* Signup Page Styles */
+.signup-container {
+    max-width: 400px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: var(--section-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.signup-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+#signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.signup-container .login-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-container .login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.signup-container .login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Workout Page Styles */
+.workout-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.workout-card {
+    background: var(--section-bg);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.workout-card:hover {
+    transform: scale(1.03);
+}
+
+.progress-container {
+    background: #e0e0e0;
+    border-radius: 10px;
+    height: 8px;
+    margin-top: 10px;
+}
+
+.progress-bar {
+    background: var(--primary-color);
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.exercise-log {
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.exercise-log input {
+    width: 60px;
+    margin-right: 10px;
+    padding: 5px;
+}
+
+.one-rm-display {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-top: 10px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-color);
+    padding: 20px;
+    border-radius: 10px;
+    z-index: 1001;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal.active {
+    display: block;
+}
+
+.overlay.active {
+    display: block;
+}
+
+.modal select, .modal input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.modal button {
+    margin-right: 10px;
+}
+
+/* New Styles for Body Progress Page */
+.progress-section, .goal-section {
+    background: var(--section-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    background: #e0e0e0;
+    border-radius: 10px;
+    height: 20px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    background: var(--primary-color);
+    height: 100%;
+    width: 0;
+    transition: width 0.3s ease;
+}
+
+/* Dark Mode Adjustments */
+body.dark .signup-container, body.dark .progress-section, body.dark .goal-section {
+    background: var(--section-bg);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background: var(--bg-color);
+        position: absolute;
+        top: 100%;
+        left: 0;
+        padding: 1rem;
+    }
+    .nav-links.active {
+        display: flex;
+    }
+    .hamburger {
+        display: block;
+    }
+    .signup-container {
+        padding: 15px;
+    }
+
+/* Hero Section for Home Page */
+.hero {
+    text-align: center;
+    padding: 50px 20px;
+    background: var(--section-bg);
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 1200px;
+    animation: fadeIn 1s ease-in; /* Smooth fade-in */
+}
+
+.hero h2 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: var(--header-text); /* High contrast for readability */
+}
+
+.hero p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+/* Features Section for Home Page */
+.features {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 20px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feature {
+    text-align: center;
+    width: 30%;
+    margin-bottom: 20px;
+    animation: fadeInUp 1.5s ease-in; /* Slide-up effect */
+}
+
+.feature i {
+    font-size: 3em;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.feature h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: var(--text-color);
+}
+
+.feature p {
+    font-size: 1em;
+    color: var(--text-color);
+}
+
+/* About Page Styles */
+.about-container {
+    background: var(--section-bg);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px auto;
+    max-width: 800px;
+    animation: fadeIn 1s ease-in;
+}
+
+.about-container h2 {
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.about-container p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: var(--text-color);
+}
+
+.about-container .build-version {
+    font-size: 1em;
+    color: var(--primary-color);
+    text-align: center;
+}
+
+/* Enhanced Logo Animation */
+.header-logo {
+    animation: bounce 2s infinite alternate; /* Tighter bounce */
+}
+
+/* New Animation for Features */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Styles for Features */
+@media (max-width: 768px) {
+    .feature {
+        width: 100%;
+    }
+}

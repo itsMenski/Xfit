@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XFit - Workout Planner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7Z4RV/Zb6+0wQTTt+fSvZCvFzVfUjZrZ+cV0s5a/1B4NqlX2uPj1SABfA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <!-- Gradient Header with Logo -->
+  <div class="header">
+    <div class="header-logo">
+      <h1><span class="blue-x">X</span><span class="white-fit">Fit</span></h1>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="logo"><a href="../index.html">XFit</a></div>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="body.html" class="nav-link">Body Progress</a>
+      <a href="workout.html" class="nav-link">Workout</a>
+      <a href="diet.html" class="nav-link">Diet</a>
+      <a href="settings.html" class="nav-link">Settings</a>
+      <a href="signup.html" class="nav-link">Sign Up</a>
+      <a href="about.html" class="nav-link">About</a>
+      <button id="themeToggle" class="button">Toggle Theme</button>
+    </div>
+    <div class="hamburger" id="hamburger">☰</div>
+  </nav>
+
+  <!-- Workout Content -->
+  <div class="container">
+    <h2>Workout Planner</h2>
+    <div id="workoutCards" class="workout-cards"></div>
+    <div style="margin-top: 20px;">
+      <button id="addDayBtn" class="button">Add New Day</button>
+      <button id="resetWorkoutBtn" class="button">Reset All Days</button>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="overlay" class="overlay"></div>
+  <div id="addDayModal" class="modal">
+    <h3>Add New Workout Day</h3>
+    <input type="text" id="newDayName" placeholder="Day Name (e.g., Monday - Chest)">
+    <input type="date" id="newDayDate">
+    <div style="margin-top: 20px;">
+      <button id="saveDayBtn" class="button">Save</button>
+      <button id="cancelAddDayBtn" class="button">Cancel</button>
+    </div>
+  </div>
+  <div id="workoutDetailsModal" class="modal">
+    <h3 id="dayName"></h3>
+    <p id="dayDate"></p>
+    <ul id="exercisesList" class="exercise-log"></ul>
+    <div style="margin-top: 20px;">
+      <button id="addExerciseBtn" class="button">Add Exercise</button>
+      <button id="backToMainBtn" class="button">Back</button>
+    </div>
+  </div>
+  <div id="addExerciseModal" class="modal">
+    <h3>Add Exercise</h3>
+    <select id="bodyPartSelect"></select>
+    <select id="exerciseSelect"></select>
+    <input type="number" id="setsInput" placeholder="Number of Sets" min="1">
+    <div style="margin-top: 20px;">
+      <button id="saveExerciseBtn" class="button">Save</button>
+      <button id="cancelAddExerciseBtn" class="button">Cancel</button>
+    </div>
+  </div>
+  <div id="setPickerModal" class="modal">
+    <h3>Log Set</h3>
+    <label for="weightSelect">Weight (kg):</label>
+    <select id="weightSelect"></select>
+    <label for="repsSelect">Reps:</label>
+    <select id="repsSelect"></select>
+    <div id="oneRMDisplay" class="one-rm-display">Calculated 1RM: 0 kg</div>
+    <div style="margin-top: 20px;">
+      <button id="saveSetBtn" class="button">Save</button>
+      <button id="cancelSetBtn" class="button">Cancel</button>
+    </div>
+  </div>
+
+  <script src="../assets/scripts.js"></script>
+  <script>
+    // Exercise database with 45+ exercises per body part
+    const exercises = {
+      "Chest": [
+        "Bench Press", "Incline Bench Press", "Decline Bench Press", "Dumbbell Fly", "Push-Up", "Cable Crossover",
+        "Chest Dip", "Pec Deck Machine", "Incline Dumbbell Press", "Flat Dumbbell Press", "Decline Dumbbell Press",
+        "Machine Chest Press", "Smith Machine Bench Press", "Close-Grip Bench Press", "Wide-Grip Bench Press",
+        "Floor Press", "Landmine Press", "Svend Press", "Plate Press", "Push-Up Variations (Wide, Diamond)",
+        "Weighted Push-Up", "Resistance Band Chest Press", "Single-Arm Dumbbell Press", "Cable Fly (High, Mid, Low)",
+        "Dumbbell Pullover", "Incline Cable Press", "Decline Cable Press", "Machine Fly", "Chest Squeeze Press",
+        "Incline Push-Up", "Decline Push-Up", "Archer Push-Up", "Clap Push-Up", "Spiderman Push-Up", "Pike Push-Up",
+        "Handstand Push-Up", "Wall Push-Up", "Knee Push-Up", "TRX Chest Press", "Medicine Ball Chest Pass",
+        "Stability Ball Push-Up", "BOSU Ball Push-Up", "Ring Push-Up", "Parallette Push-Up", "Deficit Push-Up",
+        "Weighted Dip", "Band-Resisted Push-Up", "Isometric Chest Squeeze"
+      ],
+      "Back": [
+        "Deadlift", "Pull-Up", "Chin-Up", "Lat Pulldown", "Bent-Over Row", "T-Bar Row", "Seated Cable Row",
+        "Single-Arm Dumbbell Row", "Inverted Row", "Pendlay Row", "Meadows Row", "Yates Row", "Barbell Shrug",
+        "Dumbbell Shrug", "Face Pull", "Reverse Fly", "Hyperextension", "Good Morning", "Rack Pull", "Snatch-Grip Deadlift",
+        "Sumo Deadlift", "Romanian Deadlift", "Stiff-Legged Deadlift", "Deficit Deadlift", "Trap Bar Deadlift",
+        "Cable Pull-Through", "Lat Pushdown", "Straight-Arm Pulldown", "Cable Row with V-Bar", "Machine Row",
+        "Chest-Supported Row", "Seal Row", "Kroc Row", "Renegade Row", "Batwing Row", "TRX Row", "Ring Row",
+        "Band Pull-Apart", "Scapular Retraction", "Prone Y-Raise", "Prone T-Raise", "Prone W-Raise", "Cable Face Pull",
+        "Rope Climb", "Farmer's Walk", "Suitcase Carry", "Back Extension", "Superman Hold", "Bird Dog"
+      ],
+      "Legs": [
+        "Squat", "Front Squat", "Overhead Squat", "Box Squat", "Pistol Squat", "Goblet Squat", "Zercher Squat",
+        "Hack Squat", "Leg Press", "Lunges", "Reverse Lunges", "Walking Lunges", "Bulgarian Split Squat",
+        "Step-Up", "Calf Raise", "Seated Calf Raise", "Donkey Calf Raise", "Leg Extension", "Leg Curl",
+        "Romanian Deadlift", "Glute Bridge", "Hip Thrust", "Single-Leg Deadlift", "Kettlebell Swing", "Jump Squat",
+        "Box Jump", "Depth Jump", "Skater Jump", "Lateral Lunge", "Curtsy Lunge", "Sumo Squat", "Wall Sit",
+        "Sissy Squat", "Jefferson Squat", "Anderson Squat", "Pause Squat", "Tempo Squat", "Belt Squat",
+        "Safety Bar Squat", "Smith Machine Squat", "Machine Hack Squat", "V-Squat", "Pendulum Squat",
+        "Glute-Ham Raise", "Nordic Hamstring Curl", "Stability Ball Leg Curl", "TRX Leg Curl", "Band Good Morning"
+      ],
+      "Arms": [
+        "Bicep Curl", "Hammer Curl", "Preacher Curl", "Concentration Curl", "Incline Dumbbell Curl", "Spider Curl",
+        "Zottman Curl", "Reverse Curl", "Cable Curl", "Barbell Curl", "EZ-Bar Curl", "Drag Curl", "21s", "Tricep Dip",
+        "Skull Crusher", "Tricep Pushdown", "Overhead Tricep Extension", "Close-Grip Bench Press", "Diamond Push-Up",
+        "Kickback", "Tate Press", "JM Press", "French Press", "Rope Pushdown", "Single-Arm Pushdown", "Bench Dip",
+        "Ring Dip", "Machine Dip", "Weighted Dip", "Band Pushdown", "Band Overhead Extension", "Band Curl",
+        "Plate Curl", "Waiter's Curl", "Cross-Body Hammer Curl", "Incline Hammer Curl", "Seated Alternating Curl",
+        "Standing Resistance Band Curl", "Lying Tricep Extension", "Tricep Kickback with Band", "Close-Grip Push-Up",
+        "Reverse Grip Tricep Pushdown", "Cable Overhead Tricep Extension", "EZ-Bar Skull Crusher", "Dumbbell Skull Crusher",
+        "Cable Kickback", "Machine Tricep Extension", "Machine Bicep Curl", "Cable Hammer Curl"
+      ],
+      "Shoulders": [
+        "Overhead Press", "Arnold Press", "Dumbbell Shoulder Press", "Push Press", "Military Press", "Seated Barbell Press",
+        "Lateral Raise", "Front Raise", "Rear Delt Fly", "Face Pull", "Upright Row", "Shrug", "Lateral Raise with Band",
+        "Front Raise with Plate", "Rear Delt Row", "Scaption Raise", "Shoulder External Rotation", "Shoulder Internal Rotation",
+        "Cuban Press", "Landmine Press", "Single-Arm Dumbbell Press", "Push Jerk", "Split Jerk", "Clean and Press",
+        "Thruster", "Wall Walk", "Handstand Hold", "Handstand Push-Up", "Pike Push-Up", "Shoulder Tap", "Plank to Pike",
+        "Y-Raise", "T-Raise", "W-Raise", "I-Raise", "Bus Driver", "Plate Halo", "Around the World", "Shoulder Bomber",
+        "Dumbbell Shrug", "Barbell Shrug", "Trap Bar Shrug", "Smith Machine Shrug", "Cable Lateral Raise", "Machine Lateral Raise",
+        "Cable Front Raise", "Machine Shoulder Press", "Reverse Pec Deck"
+      ],
+      "Core": [
+        "Plank", "Side Plank", "Russian Twist", "Bicycle Crunch", "Leg Raise", "Hanging Leg Raise", "Toe Touch",
+        "V-Up", "Sit-Up", "Crunches", "Reverse Crunch", "Flutter Kick", "Scissor Kick", "Mountain Climber", "Dead Bug",
+        "Bird Dog", "Superman", "Ab Wheel Rollout", "Pallof Press", "Woodchopper", "Cable Crunch", "Decline Sit-Up",
+        "Weighted Plank", "Dragon Flag", "L-Sit", "Hollow Hold", "Tuck Hold", "Side Bend", "Oblique Crunch",
+        "Windshield Wiper", "Hanging Knee Raise", "Captain's Chair Leg Raise", "Swiss Ball Crunch", "Swiss Ball Pike",
+        "Swiss Ball Rollout", "TRX Pike", "TRX Knee Tuck", "TRX Fallout", "Medicine Ball Slam", "Medicine Ball Throw",
+        "Landmine Rotation", "Cable Woodchopper", "Cable Twist", "Kettlebell Windmill", "Kettlebell Turkish Get-Up",
+        "Stability Ball Jackknife", "BOSU Ball Crunch", "Cable Reverse Crunch"
+      ]
+    };
+
+    // State management
+    let workoutDays = JSON.parse(localStorage.getItem('workoutDays')) || [];
+    let currentDayIndex = -1;
+    let currentExerciseIndex = -1;
+    let currentSetIndex = -1;
+
+    // Save data to localStorage
+    function saveData() {
+      localStorage.setItem('workoutDays', JSON.stringify(workoutDays));
+    }
+
+    // Populate workout cards
+    function populateWorkoutCards() {
+      const container = document.getElementById('workoutCards');
+      container.innerHTML = '';
+      workoutDays.forEach((day, index) => {
+        const totalSets = day.exercises.reduce((sum, ex) => sum + ex.sets.length, 0);
+        const completedSets = day.exercises.reduce((sum, ex) => sum + ex.sets.filter(s => s.completed).length, 0);
+        const progress = totalSets ? Math.round((completedSets / totalSets) * 100) : 0;
+        const card = document.createElement('div');
+        card.className = 'workout-card';
+        card.innerHTML = `
+          <p><strong>${day.name}</strong></p>
+          <p>Date: ${day.date ? new Date(day.date).toLocaleDateString() : 'No Date'}</p>
+          <div class="progress-container">
+            <div class="progress-bar" style="width: ${progress}%"></div>
+          </div>
+          <p>Exercises: ${day.exercises.length}</p>
+        `;
+        card.addEventListener('click', () => showWorkoutDetails(index));
+        container.appendChild(card);
+      });
+    }
+
+    // Show workout details modal
+    function showWorkoutDetails(index) {
+      currentDayIndex = index;
+      const day = workoutDays[index];
+      document.getElementById('dayName').textContent = day.name;
+      document.getElementById('dayDate').textContent = day.date ? `Date: ${new Date(day.date).toLocaleDateString()}` : 'No Date';
+      populateExercisesList();
+      toggleModal('workoutDetailsModal', true);
+    }
+
+    // Populate exercises list in workout details
+    function populateExercisesList() {
+      const list = document.getElementById('exercisesList');
+      list.innerHTML = '';
+      const exercises = workoutDays[currentDayIndex].exercises;
+      exercises.forEach((ex, exIndex) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${ex.exercise}</strong> (${ex.sets.length} sets)`;
+        const setsUl = document.createElement('ul');
+        ex.sets.forEach((set, setIndex) => {
+          const setLi = document.createElement('li');
+          setLi.innerHTML = set.completed ? `${set.weight}kg x ${set.reps}` : 'Not Logged';
+          const button = document.createElement('button');
+          button.textContent = set.completed ? 'Edit' : 'Log';
+          button.className = 'button';
+          button.addEventListener('click', () => {
+            currentExerciseIndex = exIndex;
+            currentSetIndex = setIndex;
+            showSetPicker(set);
+          });
+          setLi.appendChild(button);
+          setsUl.appendChild(setLi);
+        });
+        li.appendChild(setsUl);
+        list.appendChild(li);
+      });
+    }
+
+    // Show set picker modal
+    function showSetPicker(set) {
+      const weightSelect = document.getElementById('weightSelect');
+      const repsSelect = document.getElementById('repsSelect');
+      weightSelect.value = set.weight || '';
+      repsSelect.value = set.reps || '';
+      updateOneRM();
+      toggleModal('setPickerModal', true);
+    }
+
+    // Calculate and update 1RM using Epley formula
+    function updateOneRM() {
+      const weight = parseFloat(document.getElementById('weightSelect').value);
+      const reps = parseInt(document.getElementById('repsSelect').value);
+      const oneRM = weight && reps ? (weight * (1 + reps / 30)).toFixed(1) : 0;
+      document.getElementById('oneRMDisplay').textContent = `Calculated 1RM: ${oneRM} kg`;
+    }
+
+    // Populate body part dropdown
+    function populateBodyParts() {
+      const select = document.getElementById('bodyPartSelect');
+      select.innerHTML = '<option value="">Select Body Part</option>';
+      Object.keys(exercises).forEach(bp => {
+        const option = document.createElement('option');
+        option.value = bp;
+        option.textContent = bp;
+        select.appendChild(option);
+      });
+      populateExercises();
+    }
+
+    // Populate exercise dropdown based on body part
+    function populateExercises() {
+      const bp = document.getElementById('bodyPartSelect').value;
+      const select = document.getElementById('exerciseSelect');
+      select.innerHTML = '<option value="">Select Exercise</option>';
+      if (bp && exercises[bp]) {
+        exercises[bp].forEach(ex => {
+          const option = document.createElement('option');
+          option.value = ex;
+          option.textContent = ex;
+          select.appendChild(option);
+        });
+      }
+    }
+
+    // Populate weight and reps dropdowns
+    function populateWeightAndReps() {
+      const weightSelect = document.getElementById('weightSelect');
+      const repsSelect = document.getElementById('repsSelect');
+      weightSelect.innerHTML = '<option value="">Select Weight</option>';
+      for (let w = 0.5; w <= 200; w += 0.5) {
+        const option = document.createElement('option');
+        option.value = w;
+        option.textContent = w.toFixed(1);
+        weightSelect.appendChild(option);
+      }
+      repsSelect.innerHTML = '<option value="">Select Reps</option>';
+      for (let r = 1; r <= 20; r++) {
+        const option = document.createElement('option');
+        option.value = r;
+        option.textContent = r;
+        repsSelect.appendChild(option);
+      }
+    }
+
+    // Toggle modal visibility
+    function toggleModal(modalId, show) {
+      const modal = document.getElementById(modalId);
+      const overlay = document.getElementById('overlay');
+      if (show) {
+        modal.classList.add('active');
+        overlay.classList.add('active');
+      } else {
+        modal.classList.remove('active');
+        overlay.classList.remove('active');
+      }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      populateWorkoutCards();
+      populateBodyParts();
+      populateWeightAndReps();
+
+      document.getElementById('addDayBtn').addEventListener('click', () => toggleModal('addDayModal', true));
+
+      document.getElementById('saveDayBtn').addEventListener('click', () => {
+        const name = document.getElementById('newDayName').value.trim();
+        const date = document.getElementById('newDayDate').value;
+        if (name) {
+          workoutDays.push({ name, date, exercises: [] });
+          saveData();
+          populateWorkoutCards();
+          document.getElementById('newDayName').value = '';
+          document.getElementById('newDayDate').value = '';
+          toggleModal('addDayModal', false);
+        } else {
+          alert('Please enter a day name.');
+        }
+      });
+
+      document.getElementById('cancelAddDayBtn').addEventListener('click', () => toggleModal('addDayModal', false));
+
+      document.getElementById('addExerciseBtn').addEventListener('click', () => {
+        toggleModal('workoutDetailsModal', false);
+        toggleModal('addExerciseModal', true);
+      });
+
+      document.getElementById('saveExerciseBtn').addEventListener('click', () => {
+        const exercise = document.getElementById('exerciseSelect').value;
+        const setsNum = parseInt(document.getElementById('setsInput').value);
+        if (exercise && setsNum >= 1) {
+          const sets = Array(setsNum).fill().map(() => ({ weight: 0, reps: 1, completed: false }));
+          workoutDays[currentDayIndex].exercises.push({ exercise, sets });
+          saveData();
+          populateExercisesList();
+          populateWorkoutCards();
+          toggleModal('addExerciseModal', false);
+          toggleModal('workoutDetailsModal', true);
+        } else {
+          alert('Please select an exercise and enter a valid number of sets.');
+        }
+      });
+
+      document.getElementById('cancelAddExerciseBtn').addEventListener('click', () => {
+        toggleModal('addExerciseModal', false);
+        toggleModal('workoutDetailsModal', true);
+      });
+
+      document.getElementById('backToMainBtn').addEventListener('click', () => toggleModal('workoutDetailsModal', false));
+
+      document.getElementById('saveSetBtn').addEventListener('click', () => {
+        const weight = parseFloat(document.getElementById('weightSelect').value);
+        const reps = parseInt(document.getElementById('repsSelect').value);
+        if (weight && reps) {
+          workoutDays[currentDayIndex].exercises[currentExerciseIndex].sets[currentSetIndex] = { weight, reps, completed: true };
+          saveData();
+          populateExercisesList();
+          populateWorkoutCards();
+          toggleModal('setPickerModal', false);
+        } else {
+          alert('Please select weight and reps.');
+        }
+      });
+
+      document.getElementById('cancelSetBtn').addEventListener('click', () => toggleModal('setPickerModal', false));
+
+      document.getElementById('weightSelect').addEventListener('change', updateOneRM);
+      document.getElementById('repsSelect').addEventListener('change', updateOneRM);
+
+      document.getElementById('resetWorkoutBtn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all workout days?')) {
+          workoutDays = [];
+          saveData();
+          populateWorkoutCards();
+        }
+      });
+
+      document.getElementById('bodyPartSelect').addEventListener('change', populateExercises);
+    });
+  </script>
+</body>
+</html>

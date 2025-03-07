@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XFit - Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7Z4RV/Zb6+0wQTTt+fSvZCvFzVfUjZrZ+cV0s5a/1B4NqlX2uPj1SABfA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <!-- Gradient Header with Logo -->
+  <div class="header">
+    <div class="header-logo">
+      <h1><span class="blue-x">X</span><span class="white-fit">Fit</span></h1>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="logo"><a href="../index.html">XFit</a></div>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="body.html" class="nav-link">Body Progress</a>
+      <a href="workout.html" class="nav-link">Workout</a>
+      <a href="diet.html" class="nav-link">Diet</a>
+      <a href="settings.html" class="nav-link">Settings</a>
+      <a href="signup.html" class="nav-link">Sign Up</a>
+      <a href="about.html" class="nav-link">About</a>
+      <button id="themeToggle" class="button">Toggle Theme</button>
+    </div>
+    <div class="hamburger" id="hamburger">☰</div>
+  </nav>
+
+  <!-- Settings Content -->
+  <div class="container">
+    <h2>Settings</h2>
+
+    <!-- Account Settings -->
+    <div class="settings-section">
+      <h3>Account Settings</h3>
+      <form id="accountForm">
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email">
+        </div>
+        <div class="input-group">
+          <label for="password">New Password</label>
+          <input type="password" id="password" placeholder="Enter new password">
+        </div>
+        <button type="submit" class="button">Save Changes</button>
+      </form>
+    </div>
+
+    <!-- Notification Preferences -->
+    <div class="settings-section">
+      <h3>Notification Preferences</h3>
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="reminders" checked>
+          Receive workout reminders
+        </label>
+      </div>
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="updates">
+          Receive app updates and news
+        </label>
+      </div>
+    </div>
+
+    <!-- App Preferences -->
+    <div class="settings-section">
+      <h3>App Preferences</h3>
+      <div class="input-group">
+        <label for="units">Measurement Units</label>
+        <select id="units">
+          <option value="metric">Metric (kg, cm)</option>
+          <option value="imperial">Imperial (lbs, inches)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="theme">Theme</label>
+        <select id="theme">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="language">Language</label>
+        <select id="language">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="settings-section">
+      <h3>Privacy Settings</h3>
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="analytics">
+          Allow data sharing for analytics
+        </label>
+      </div>
+      <div class="input-group">
+        <label>
+          <input type="checkbox" id="ads">
+          Allow personalized ads
+        </label>
+      </div>
+    </div>
+
+    <!-- Account Actions -->
+    <div class="settings-section">
+      <h3>Account Actions</h3>
+      <button class="button" id="logoutBtn">Logout</button>
+      <button class="button" id="deleteAccountBtn" style="background-color: #e74c3c; margin-top: 10px;">Delete Account</button>
+    </div>
+  </div>
+
+  <script src="../assets/scripts.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const accountForm = document.getElementById('accountForm');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+
+      // Handle account settings save
+      accountForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Account settings saved!');
+      });
+
+      // Handle logout
+      logoutBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to logout?')) {
+          alert('Logged out successfully.');
+          // Add actual logout logic here
+        }
+      });
+
+      // Handle delete account
+      deleteAccountBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+          alert('Account deleted.');
+          // Add actual delete account logic here
+        }
+      });
+    });
+  </script>
+</body>
+</html>

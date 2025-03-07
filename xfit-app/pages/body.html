@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>XFit - Body Progress</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" 
+        integrity="sha512-KyZXEAg3QhqLMpG8r+Knujsl5+5hb7Z4RV/Zb6+0wQTTt+fSvZCvFzVfUjZrZ+cV0s5a/1B4NqlX2uPj1SABfA==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="../assets/styles.css">
+</head>
+<body>
+  <div class="header">
+    <div class="header-logo">
+      <h1><span class="blue-x">X</span><span class="white-fit">Fit</span></h1>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <div class="logo"><a href="../index.html">XFit</a></div>
+    <div class="nav-links" id="navLinks">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="body.html" class="nav-link">Body Progress</a>
+      <a href="workout.html" class="nav-link">Workout</a>
+      <a href="diet.html" class="nav-link">Diet</a>
+      <a href="settings.html" class="nav-link">Settings</a>
+      <a href="signup.html" class="nav-link">Sign Up</a>
+      <a href="about.html" class="nav-link">About</a>
+      <button id="themeToggle" class="button">Toggle Theme</button>
+    </div>
+    <div class="hamburger" id="hamburger">☰</div>
+  </nav>
+
+  <div class="container">
+    <h2>Body Progress</h2>
+    <div class="progress-section" style="display: none;">
+      <h3><i class="fas fa-dumbbell"></i> Your Progress</h3>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <p>Current: <span id="currentWeight">0</span> kg | Goal: <span id="goalWeight">0</span> kg</p>
+      <p id="goalMessage" style="display: none; color: green; font-weight: bold;">Congratulations! You've reached your goal!</p>
+    </div>
+    <div class="form-section">
+      <h3>Add Current Stats</h3>
+      <form id="bodyForm">
+        <div class="input-group">
+          <label for="date">Date (optional):</label>
+          <input type="date" id="date">
+        </div>
+        <div class="input-group">
+          <label for="weight">Weight (kg):</label>
+          <input type="number" id="weight" step="0.1" min="0" placeholder="e.g., 70.5">
+        </div>
+        <div class="input-group">
+          <label for="gender">Gender:</label>
+          <select id="gender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="skinfold1">Skinfold 1 (mm):</label>
+          <input type="number" id="skinfold1" step="0.1" min="0" placeholder="Chest (M) / Triceps (F)">
+        </div>
+        <div class="input-group">
+          <label for="skinfold2">Skinfold 2 (mm):</label>
+          <input type="number" id="skinfold2" step="0.1" min="0" placeholder="Abdomen (M) / Suprailiac (F)">
+        </div>
+        <div class="input-group">
+          <label for="skinfold3">Skinfold 3 (mm):</label>
+          <input type="number" id="skinfold3" step="0.1" min="0" placeholder="Thigh">
+        </div>
+        <button type="submit" class="button">Save</button>
+      </form>
+    </div>
+    <div class="history-section">
+      <h3>History</h3>
+      <table id="historyTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Weight (kg)</th>
+            <th>Body Fat %</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="clearDataBtn" class="button" style="margin-top: 20px;">Clear All Data</button>
+    </div>
+    <div class="goal-section" style="display: none;">
+      <h3><i class="fas fa-bullseye"></i> Set Your Goal</h3>
+      <input type="number" id="goalWeightInput" placeholder="Target Weight (kg)" step="0.1" min="0">
+      <button id="setGoalBtn" class="button">Set Goal</button>
+    </div>
+  </div>
+
+  <script src="../assets/scripts.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let bodyData = JSON.parse(localStorage.getItem('bodyData')) || [];
+      let goal = JSON.parse(localStorage.getItem('goal')) || null;
+
+      const bodyForm = document.getElementById('bodyForm');
+      const historyTable = document.getElementById('historyTable').querySelector('tbody');
+      const clearDataBtn = document.getElementById('clearDataBtn');
+
+      function calculateBodyFat(gender, skinfoldSum, age) {
+        let bodyDensity;
+        if (gender === 'male') {
+          bodyDensity = 1.10938 - (0.0008267 * skinfoldSum) + (0.0000016 * skinfoldSum * skinfoldSum) - (0.0002574 * age);
+        } else {
+          bodyDensity = 1.0994921 - (0.0009929 * skinfoldSum) + (0.0000023 * skinfoldSum * skinfoldSum) - (0.0001392 * age);
+        }
+        const bodyFat = ((4.95 / bodyDensity) - 4.5) * 100;
+        return bodyFat.toFixed(1);
+      }
+
+      function displayHistory() {
+        historyTable.innerHTML = '';
+        if (bodyData.length === 0) {
+          historyTable.innerHTML = '<tr><td colspan="3">No data yet. Start by adding your current stats.</td></tr>';
+          document.querySelector('.goal-section').style.display = 'none';
+          document.querySelector('.progress-section').style.display = 'none';
+          return;
+        }
+        const sortedData = bodyData.sort((a, b) => new Date(b.date) - new Date(a.date));
+        sortedData.forEach(entry => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${new Date(entry.date).toLocaleDateString()}</td>
+            <td>${entry.weight}</td>
+            <td>${entry.bodyFat ? entry.bodyFat + '%' : '-'}</td>
+          `;
+          historyTable.appendChild(row);
+        });
+        document.querySelector('.goal-section').style.display = 'block';
+        if (goal) {
+          document.querySelector('.progress-section').style.display = 'block';
+          const latestWeight = sortedData[0].weight;
+          let progress;
+          if (goal.targetWeight < goal.startingWeight) { // weight loss
+            progress = (goal.startingWeight - latestWeight) / (goal.startingWeight - goal.targetWeight);
+          } else if (goal.targetWeight > goal.startingWeight) { // weight gain
+            progress = (latestWeight - goal.startingWeight) / (goal.targetWeight - goal.startingWeight);
+          } else {
+            progress = 1; // goal is current weight
+          }
+          progress = Math.min(Math.max(progress, 0), 1); // clamp between 0 and 1
+          document.querySelector('.progress-fill').style.width = (progress * 100) + '%';
+          document.getElementById('currentWeight').textContent = latestWeight;
+          document.getElementById('goalWeight').textContent = goal.targetWeight;
+          if ((goal.targetWeight < goal.startingWeight && latestWeight <= goal.targetWeight) ||
+              (goal.targetWeight > goal.startingWeight && latestWeight >= goal.targetWeight)) {
+            document.getElementById('goalMessage').style.display = 'block';
+          } else {
+            document.getElementById('goalMessage').style.display = 'none';
+          }
+        } else {
+          document.querySelector('.progress-section').style.display = 'none';
+        }
+      }
+
+      bodyForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const dateInput = document.getElementById('date').value;
+        const weight = parseFloat(document.getElementById('weight').value);
+        const gender = document.getElementById('gender').value;
+        const skinfold1 = parseFloat(document.getElementById('skinfold1').value);
+        const skinfold2 = parseFloat(document.getElementById('skinfold2').value);
+        const skinfold3 = parseFloat(document.getElementById('skinfold3').value);
+        const age = 25; // Placeholder; add an age input if needed
+
+        if (!weight || weight <= 0 || !skinfold1 || !skinfold2 || !skinfold3) {
+          alert('Please enter valid weight and skinfold measurements.');
+          return;
+        }
+
+        const skinfoldSum = skinfold1 + skinfold2 + skinfold3;
+        const bodyFat = calculateBodyFat(gender, skinfoldSum, age);
+        const date = dateInput || new Date().toISOString().split('T')[0];
+        const newEntry = { date, weight, bodyFat };
+        bodyData.push(newEntry);
+        localStorage.setItem('bodyData', JSON.stringify(bodyData));
+        bodyForm.reset();
+        displayHistory();
+      });
+
+      clearDataBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete all body progress data?')) {
+          bodyData = [];
+          localStorage.removeItem('bodyData');
+          goal = null;
+          localStorage.removeItem('goal');
+          displayHistory();
+        }
+      });
+
+      document.getElementById('setGoalBtn').addEventListener('click', () => {
+        const targetWeight = parseFloat(document.getElementById('goalWeightInput').value);
+        if (isNaN(targetWeight) || targetWeight <= 0) {
+          alert('Please enter a valid target weight.');
+          return;
+        }
+        if (bodyData.length === 0) {
+          alert('Please add at least one stat entry before setting a goal.');
+          return;
+        }
+        const startingWeight = bodyData.sort((a, b) => new Date(b.date) - new Date(a.date))[0].weight;
+        goal = { targetWeight, startingWeight };
+        localStorage.setItem('goal', JSON.stringify(goal));
+        displayHistory();
+      });
+
+      displayHistory();
+    });
+  </script>
+</body>
+</html>
